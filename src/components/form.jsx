@@ -86,13 +86,24 @@ const Form = () => {
 			focusInput.current.focus();
 	}, [focusInput]);
 
-	function handleChangeSource(text, additive = false, fromLanguage = state.sourceLanguage.id, toLanguage = state.targetLanguage.id) {
+	function handleChangeSource(text, additive = false, format_to_sentences = false, fromLanguage = state.sourceLanguage.id, toLanguage = state.targetLanguage.id) {
 		setState((prevState) => {
 			if(additive){
-				if(text.length > 0) text = text.charAt(0).toLocaleUpperCase() + text.slice(1);
-				if(text !== "") text += ".";
-				if(text !== "" && prevState.source !== "") text = "\n" + text;
-				text = prevState.source + text;
+				if (format_to_sentences) {
+					if(text.length > 0) text = text.charAt(0).toLocaleUpperCase() + text.slice(1);
+					if(text !== "") text += ".";
+					if(text !== "" && prevState.source !== "") text = "\n" + text;
+				}
+				else {
+					text = text.trim();
+					text = text.replace(/([.!?])/g, "$1\n")
+					const stable = prevState.source;
+					if (stable.length !== 0 &&
+						!stable.endsWith(" ") &&
+						!stable.endsWith("\n"))
+						text = " " + text;
+					text = stable + text;
+				}
 			}
 
 			console.log("fromLanguage: ", fromLanguage, additive, state.sourceLanguage.id);
@@ -142,11 +153,11 @@ const Form = () => {
 	const flipLanguages = () => {
 		const oldSource = state.sourceLanguage;
 		const oldTarget = state.targetLanguage;
+		const oldTranslation = state.translation;
 		setState((prevState) => { return { ...prevState, translation: "" } })
-
 		inputTypeStatistics = "swap-languages";
 		/**/// switch - keep source text as source
-		handleChangeSource(state.source, false, oldTarget.id, oldSource.id);
+		handleChangeSource(oldTranslation, false, false, oldTarget.id, oldSource.id);
 		/*/ - insert translation as new source
 		handleChangeSource(state.translation, false, oldTarget.id, oldSource.id);
 		/**/
@@ -175,7 +186,7 @@ const Form = () => {
 							onfinal = {(data) => {
 								inputTypeStatistics = "voice";
 								handleChangeSource(data, true);
-								setState((prevState => { return { ...prevState, asrTempOutput: "" } }))
+								setState((prevState => { return { ...prevState } }))
 							}}
 							onerror = {(data) => { console.error("from form onerror ASR:", data); }} // todo remove or show to user
 							language = { state.sourceLanguage.id }

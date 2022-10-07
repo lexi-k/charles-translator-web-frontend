@@ -16,7 +16,6 @@ import styles from "./asr.module.scss"
 
 
 export default function ASR(props) {
-	return (<></>) // hiden until licence is valid
 
 	const [state, setState] = React.useState({
 		visible: false,
@@ -47,15 +46,29 @@ export default function ASR(props) {
 		let speechRecognition = new SpeechRecognition();
 	
 		speechRecognition.onresult = function(result) {
-			let transcript = result.result.hypotheses[0].transcript;
-			if(transcript == '')
-				return;
+			let stable = '';
+			let unstable = '';
+
+			if ("stable" in result && "unstable" in result) { //Peter's ASR
+				stable = result.stable;
+				unstable = result.unstable;
+			}
+			else {
+				unstable = result.result.hypotheses[0].transcript;
+				if(result.final) {
+					stable = unstable;
+					unstable = '';
+				}
+			}
+			
+			if(unstable == '' && stable == '')
+				return; 
 
 			if(props.onresult !== undefined)
-				props.onresult(transcript)
-	
-			if(result.final && props.onfinal !== undefined)
-				props.onfinal(transcript)  
+				props.onresult(unstable)
+
+			if(stable != "" && props.onfinal !== undefined)
+				props.onfinal(stable) 
 		}
 	
 		speechRecognition.onstart = function(e) {}

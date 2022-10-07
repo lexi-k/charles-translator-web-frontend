@@ -7,7 +7,7 @@ const Recorder = function(cfg){
 	let bufferCallback = config.bufferCallback || function(buffer) { /*console.info(buffer);*/ };
 	let errorCallback = config.errorCallback || function(error) { /*console.info(error);*/ };
 	let volumeCallback = config.volumeCallback || function(average) { /*console.info(average);*/ };
-	let sampleRate = 0;
+	let sampleRate = config.sampleRate || 16000;
 	let recording = false;
 	let source = null;
 	let analyser = null;
@@ -55,7 +55,10 @@ const Recorder = function(cfg){
 			window.AudioContext = window.AudioContext || window.webkitAudioContext || navigator.mozAudioContext;
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-			audio_context = new AudioContext;
+			audio_context = new AudioContext({
+				latencyHint: "interactive",
+				sampleRate: sampleRate,
+			  });
 			//console.info('Audio context set up.');
 			//console.info('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
 
@@ -83,8 +86,8 @@ const Recorder = function(cfg){
 	
 			let buffer = [];
 			for (let channel = 0; channel < numChannels; channel++){
-					buffer.push(e.inputBuffer.getChannelData(channel));
-			}
+				buffer.push(e.inputBuffer.getChannelData(channel));
+		}
 
 			bufferCallback(buffer);
 
@@ -156,7 +159,7 @@ export const SpeechRecognition = function() {
 
 	function createSocket() {
 		let socket = io.connect('wss://lindat.cz/', {
-			path: '/services/ukrasr/socket.io',
+			path: '/services/cunispeech/socket.io', //use 'ukrasr' for Ondra's models
 			transports : ['websocket'],
 		});
 
