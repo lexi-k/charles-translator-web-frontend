@@ -55,10 +55,15 @@ const Recorder = function(cfg){
 			window.AudioContext = window.AudioContext || window.webkitAudioContext || navigator.mozAudioContext;
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-			audio_context = new AudioContext({
-				latencyHint: "interactive",
-				sampleRate: sampleRate,
-			  });
+
+			let userAgent = navigator.userAgent;
+			if(userAgent.match(/firefox|fxios/i))
+				audio_context = new AudioContext();
+			else
+				audio_context = new AudioContext({
+					latencyHint: "interactive",
+					sampleRate: sampleRate,
+				});
 			//console.info('Audio context set up.');
 			//console.info('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
 
