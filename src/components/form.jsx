@@ -106,17 +106,10 @@ const Form = () => {
 				}
 			}
 
-			console.log("fromLanguage: ", fromLanguage, additive, state.sourceLanguage.id);
-
 			return { ...prevState, source: text };
 		});
 
 		setLoading(true);
-
-		if(fromLanguage === languageCs.id)
-			setState((prevState) => { return { ...prevState, sourceLanguage: languageCs, targetLanguage: languageUk } })
-		else
-			setState((prevState) => { return { ...prevState, sourceLanguage: languageUk, targetLanguage: languageCs } })
 
 		if(typeof window !== 'undefined')
 			window.localStorage.setItem("lastTranslationSource", fromLanguage);
@@ -154,14 +147,15 @@ const Form = () => {
 		const oldSource = state.sourceLanguage;
 		const oldTarget = state.targetLanguage;
 		const oldTranslation = state.translation;
-		setState((prevState) => { return { ...prevState, translation: "" } })
+		setState(
+			(prevState) => { return { ...prevState, source: oldTranslation, translation: "", sourceLanguage: oldTarget, targetLanguage: oldSource } })
 		inputTypeStatistics = "swap-languages";
-		/**/// switch - keep source text as source
-		handleChangeSource(oldTranslation, false, false, oldTarget.id, oldSource.id);
-		/*/ - insert translation as new source
-		handleChangeSource(state.translation, false, oldTarget.id, oldSource.id);
-		/**/
 	}
+	
+	React.useEffect(() => {
+		handleChangeSource(state.source, false, false);
+	}, [state.sourceLanguage.id])
+
 
 	return (
 		<div className={styles.flex}>
