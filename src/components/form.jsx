@@ -144,11 +144,10 @@ const Form = () => {
 	}
 
 	const flipLanguages = () => {
-		const oldSource = state.sourceLanguage;
-		const oldTarget = state.targetLanguage;
+		const oldSource = state.sourceLanguage.id == languageCs.id ? languageCs : languageUk;
+		const oldTarget = state.targetLanguage.id == languageCs.id ? languageCs : languageUk;
 		const oldTranslation = state.translation;
-		setState(
-			(prevState) => { return { ...prevState, source: oldTranslation, translation: "", sourceLanguage: oldTarget, targetLanguage: oldSource } })
+		setState((prevState) => { return { ...prevState, source: oldTranslation, translation: "", sourceLanguage: oldTarget, targetLanguage: oldSource } })
 		inputTypeStatistics = "swap-languages";
 	}
 	
@@ -180,7 +179,6 @@ const Form = () => {
 							onfinal = {(data) => {
 								inputTypeStatistics = "voice";
 								handleChangeSource(data, true);
-								setState((prevState => { return { ...prevState } }))
 							}}
 							onerror = {(data) => { console.error("from form onerror ASR:", data); }} // todo remove or show to user
 							language = { state.sourceLanguage.id }
