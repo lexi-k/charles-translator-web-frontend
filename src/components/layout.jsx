@@ -30,7 +30,7 @@ function Layout({ children }) {
 		collectionSnackbar: false,
 		collectionSnackbarInfo: false,
 	});
-	
+
 	useEffect(() => {
 		setState( (prevState) => { return {
 			...prevState,
@@ -44,7 +44,7 @@ function Layout({ children }) {
 		setTryAndroidApp(/(android)/i.test(navigator.userAgent))
 	}, [])
 
-	const allowCollection = () => { 
+	const allowCollection = () => {
 		setState( (prevState) => { return {
 			...prevState,
 			collectionSnackbar: false,
@@ -63,7 +63,7 @@ function Layout({ children }) {
 					className={styles.header}
 					elevation={2}
 				>
-					<Toolbar className={styles.toolbar}>
+					{/* <Toolbar className={styles.toolbar}>
 						<img
 							width={230}
 							height={70}
@@ -74,10 +74,10 @@ function Layout({ children }) {
 						<div className={styles.spacer}></div>
 						<AboutUsDialog/>
 						<SettingsDialog/>
-					</Toolbar>
-					{notOfficialDeplo && <div className={styles.notOfficialDeplo}>
+					</Toolbar> */}
+					{/* {notOfficialDeplo && <div className={styles.notOfficialDeplo}>
 						<a href="https://lindat.cz/translation">
-							🚧🚧This version is not for public, please click here.🚧🚧 
+							🚧🚧This version is not for public, please click here.🚧🚧
 						</a>
 						<Tooltip title="Close">
 							<IconButton
@@ -86,11 +86,11 @@ function Layout({ children }) {
 								<CloseIcon />
 							</IconButton>
 						</Tooltip>
-					</div>}
+					</div>} */}
 				</AppBar>
 				{tryAndroidApp && <div className={styles.tryAndroidApp}>
 						<a href="https://play.google.com/store/apps/details?id=cz.cuni.mff.ufal.translator">
-							<PhoneAndroidIcon/> Try our android app. 
+							<PhoneAndroidIcon/> Try our android app.
 						</a>
 						<Tooltip title="Close">
 							<IconButton
@@ -103,7 +103,7 @@ function Layout({ children }) {
 
 				{children}
 
-				<Snackbar
+				{/* <Snackbar
 					open={state.collectionSnackbar}
 					message={`Souhlasím s tím, aby Ústav formální a aplikované lingvistiky
 						MFF UK ukládal vstupy a výstupy z překladače. V případě souhlasu
@@ -126,20 +126,20 @@ function Layout({ children }) {
 								NESOUHLASÍM
 							</Button>
 						</React.Fragment>
-					)}
-				/>
-				 <Snackbar open={state.collectionSnackbarInfo} autoHideDuration={3000} onClose={() => setState({ ...state, collectionSnackbarInfo: false })}>
+					)} */}
+				{/* /> */}
+				 {/* <Snackbar open={state.collectionSnackbarInfo} autoHideDuration={3000} onClose={() => setState({ ...state, collectionSnackbarInfo: false })}>
 					<Alert severity="info" onClose={() => setState({ ...state, collectionSnackbarInfo: false })} sx={{ width: '100%' }}>
 						Své rozhodnutí můžete kdykoli později změnit v Nastavení.
 					</Alert>
-				</Snackbar>
-
+				</Snackbar> */}
+{/*
 				<div className={styles.footer}>
 					THE LINDAT/CLARIAH-CZ PROJECT (LM2018101; formerly
 					LM2010013, LM2015071) IS FULLY SUPPORTED BY THE MINISTRY OF
 					EDUCATION, SPORTS AND YOUTH OF THE CZECH REPUBLIC UNDER THE
 					PROGRAMME LM OF LARGE INFRASTRUCTURES
-				</div>
+				</div> */}
 			</div>
 		</div>
 	);
