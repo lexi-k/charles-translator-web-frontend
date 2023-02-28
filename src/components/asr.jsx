@@ -46,20 +46,21 @@ export default function ASR(props) {
 		let speechRecognition = new SpeechRecognition();
 	
 		speechRecognition.onresult = function(result) {
+			console.log("result: ", result);
 			let stable = '';
 			let unstable = '';
 
-			if ("stable" in result && "unstable" in result) { //Peter's ASR
-				stable = result.stable;
-				unstable = result.unstable;
+			if ("new_stable" in result && "new_unstable" in result) { //Peter's ASR
+				stable = result.new_stable;
+				unstable = result.new_unstable;
 			}
-			else {
-				unstable = result.result.hypotheses[0].transcript;
-				if(result.final) {
-					stable = unstable;
-					unstable = '';
-				}
-			}
+			// else {
+			// 	unstable = result.result.hypotheses[0].transcript;
+			// 	if(result.final) {
+			// 		stable = unstable;
+			// 		unstable = '';
+			// 	}
+			// }
 			
 			if(unstable == '' && stable == '')
 				return; 

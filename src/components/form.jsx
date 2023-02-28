@@ -1,12 +1,12 @@
 import React, { useState, useRef } from "react";
-import debounce from "debounce-promise";
+// import debounce from "debounce-promise";
 import { Button, IconButton, InputAdornment, LinearProgress, TextField, Tooltip, Paper } from "@mui/material";
-import {
-    Clear as ClearIcon,
-    ContentCopy as ContentCopyIcon,
-    ErrorOutline as ErrorOutlineIcon,
-    SwapVert,
-} from "@mui/icons-material";
+// import {
+//     Clear as ClearIcon,
+//     ContentCopy as ContentCopyIcon,
+//     ErrorOutline as ErrorOutlineIcon,
+//     SwapVert,
+// } from "@mui/icons-material";
 
 import { getHistory, saveHistory } from "../history";
 import { translate } from "../api";
@@ -19,8 +19,8 @@ import czechFlag from "../../public/static/img/czech-republic.png";
 
 import styles from "./form.module.scss";
 
-const debouncedTranslate = debounce(translate, 500);
-const debouncedSave = debounce(saveHistory, 3000);
+// const debouncedTranslate = debounce(translate, 500);
+// const debouncedSave = debounce(saveHistory, 3000);
 
 const languageUk = {
     id: "uk",
@@ -36,8 +36,8 @@ const languageCs = {
     flag: czechFlag,
 };
 
-let loadingID = 0; // id of most recent sent request
-let loadedID = 0; // id o most recent received request
+// let loadingID = 0; // id of most recent sent request
+// let loadedID = 0; // id o most recent received request
 
 const Form = () => {
     const [state, setState] = useState({
@@ -50,7 +50,7 @@ const Form = () => {
         loadingError: null,
     });
     const [loading, setLoading] = useState(false);
-    const [loadingError, setLoadingError] = useState(null);
+    // const [loadingError, setLoadingError] = useState(null);
 
     let inputTypeStatistics = "keyboard";
 
@@ -80,7 +80,7 @@ const Form = () => {
         additive = false,
         format_to_sentences = false,
         fromLanguage = state.sourceLanguage.id,
-        toLanguage = state.targetLanguage.id
+        // toLanguage = state.targetLanguage.id
     ) {
         setState((prevState) => {
             if (additive) {
@@ -104,61 +104,61 @@ const Form = () => {
 
         if (typeof window !== "undefined") window.localStorage.setItem("lastTranslationSource", fromLanguage);
 
-        debouncedSave(fromLanguage, toLanguage, text);
-        debouncedTranslate({
-            text,
-            fromLanguage,
-            toLanguage,
-            loadingID: ++loadingID,
-            inputType: inputTypeStatistics,
-        })
-            .then((data) => {
-                // this request is last that was sent
-                if (data.loadingID === loadingID) setLoading(false);
+        // debouncedSave(fromLanguage, toLanguage, text);
+        // debouncedTranslate({
+        //     text,
+        //     fromLanguage,
+        //     toLanguage,
+        //     loadingID: ++loadingID,
+        //     inputType: inputTypeStatistics,
+        // })
+        //     .then((data) => {
+        //         // this request is last that was sent
+        //         if (data.loadingID === loadingID) setLoading(false);
 
-                // this request has some new information
-                if (loadedID < data.loadingID) {
-                    loadedID = data.loadingID;
-                    setState((prevState) => {
-                        return { ...prevState, translation: data.data.trim() };
-                    });
-                    setLoadingError(null);
-                }
-            })
-            .catch((error) => {
-                setLoading(false);
-                setLoadingError(error.data || "");
-                console.error("Error when loading translation");
-                console.error(error);
-            });
+        //         // this request has some new information
+        //         if (loadedID < data.loadingID) {
+        //             loadedID = data.loadingID;
+        //             setState((prevState) => {
+        //                 return { ...prevState, translation: data.data.trim() };
+        //             });
+        //             setLoadingError(null);
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         setLoading(false);
+        //         setLoadingError(error.data || "");
+        //         console.error("Error when loading translation");
+        //         console.error(error);
+        //     });
     }
 
-    const flipLanguages = () => {
-        const oldSource = state.sourceLanguage.id == languageCs.id ? languageCs : languageUk;
-        const oldTarget = state.targetLanguage.id == languageCs.id ? languageCs : languageUk;
-        const oldTranslation = state.translation;
-        setState((prevState) => {
-            return {
-                ...prevState,
-                source: oldTranslation,
-                translation: "",
-                sourceLanguage: oldTarget,
-                targetLanguage: oldSource,
-            };
-        });
-        inputTypeStatistics = "swap-languages";
-    };
+    // const flipLanguages = () => {
+    //     const oldSource = state.sourceLanguage.id == languageCs.id ? languageCs : languageUk;
+    //     const oldTarget = state.targetLanguage.id == languageCs.id ? languageCs : languageUk;
+    //     const oldTranslation = state.translation;
+    //     setState((prevState) => {
+    //         return {
+    //             ...prevState,
+    //             source: oldTranslation,
+    //             translation: "",
+    //             sourceLanguage: oldTarget,
+    //             targetLanguage: oldSource,
+    //         };
+    //     });
+    //     inputTypeStatistics = "swap-languages";
+    // };
 
-    React.useEffect(() => {
-        handleChangeSource(state.source, false, false);
-    }, [state.sourceLanguage.id]);
+    // React.useEffect(() => {
+    //     handleChangeSource(state.source, false, false);
+    // }, [state.sourceLanguage.id]);
 
-    function sleep(ms) {
-        var start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
-    }
+    // function sleep(ms) {
+    //     var start = new Date().getTime(),
+    //         expire = start + ms;
+    //     while (new Date().getTime() < expire) {}
+    //     return;
+    // }
 
     function translate(text) {
         var res = "";
@@ -224,6 +224,7 @@ const Form = () => {
                             }}
                             onfinal={(data) => {
                                 inputTypeStatistics = "voice";
+                                console.log("from form onfinal ASR:", data);
                                 handleChangeSource(data, true);
                             }}
                             onerror={(data) => {
@@ -236,23 +237,23 @@ const Form = () => {
                 <TextField
                     value={handleTranslation()}
                     label=" "
-                    onChange={(e) => {
-                        switch (e.nativeEvent.inputType) {
-                            case "insertFromPaste":
-                                inputTypeStatistics = "clipboard";
-                                break;
-                            case "deleteContentBackward":
-                            case "insertText":
-                            default:
-                                inputTypeStatistics = "keyboard";
-                        }
-                        return handleChangeSource(e.target.value);
-                    }}
+                    // onChange={(e) => {
+                    //     switch (e.nativeEvent.inputType) {
+                    //         case "insertFromPaste":
+                    //             inputTypeStatistics = "clipboard";
+                    //             break;
+                    //         case "deleteContentBackward":
+                    //         case "insertText":
+                    //         default:
+                    //             inputTypeStatistics = "keyboard";
+                    //     }
+                    //     return handleChangeSource(e.target.value);
+                    // }}
                     id="source"
                     variant="filled"
-                    color={state.source.length > 2000 ? "warning" : "primary"}
-                    error={state.source.length > 5000}
-                    helperText={state.source.length > 2000 ? "maximum text size is 5000 chars" : ""}
+                    // color={state.source.length > 2000 ? "warning" : "primary"}
+                    // error={state.source.length > 5000}
+                    // helperText={state.source.length > 2000 ? "maximum text size is 5000 chars" : ""}
                     multiline
                     inputRef={focusInput}
                     minRows={6}

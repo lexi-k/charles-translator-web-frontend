@@ -18,6 +18,8 @@ const Recorder = function(cfg){
 	this.init = function() {
 		audio_context = createAudioContext();
 		this.sampleRate = audio_context.sampleRate;
+		console.info('Sample rate: ' + this.sampleRate);
+
 
 		if (typeof navigator.mediaDevices.getUserMedia === 'undefined') {
 			navigator.getUserMedia({
@@ -88,7 +90,7 @@ const Recorder = function(cfg){
 		sourceProcessor.onaudioprocess = function(e){
 			if (!recording)
 				return;
-	
+
 			let buffer = [];
 			for (let channel = 0; channel < numChannels; channel++){
 				buffer.push(e.inputBuffer.getChannelData(channel));
@@ -132,7 +134,7 @@ export const SpeechRecognition = function() {
 	this.volumeCallback = function(volume) {};
 	this.isRecording = false;
 	this.quietForChunks = 0;
-
+	this.start_time = 0;
 	let recognizer = this;
 	let recorder = null;
 	let socket = createSocket();
@@ -143,6 +145,7 @@ export const SpeechRecognition = function() {
 		recorder.record();
 		this.isRecording = true;
 		this.onstart();
+		this.start_time = 0;
 	};
 
 	this.stop = () => {
@@ -150,7 +153,7 @@ export const SpeechRecognition = function() {
 
 		if (recorder)
 			recorder.stop();
-		
+
 		this.isRecording = false;
 	}
 
@@ -189,21 +192,59 @@ export const SpeechRecognition = function() {
 	}
 
 	function handleChunk(chunk) {
-		socket.emit("chunk", floatTo16BitPcm(chunk[0]));
-		recognizer.onchunk(chunk);
+		// var currentdate = new Date();
+		// var datetime = "Last Sync: " + currentdate.getDate() + "/"
+		// 				+ (currentdate.getMonth()+1)  + "/"
+		// 				+ currentdate.getFullYear() + " @ "
+		// 				+ currentdate.getHours() + ":"
+		// 				+ currentdate.getMinutes() + ":"
+		// 				+ currentdate.getSeconds();
+		// console.log(datetime);
+		// let BitPCMLe = floatTo16BitPcm(chunk[0]);
+		// socket.emit("chunk", BitPCMLe);
+
+		fetch ('http://slt.ufal.mff.cuni.cz:5000/', {
+
+			method: 'POST',
+			// encode the body as JSON
+			body: JSON.stringify({"timestamp" : recognizer.start_time, "chunk" : chunk[0]}),
+			// body: {"timestamp" : recognizer.start_time, "chunk" : chunk[0]},
+			headers: {
+				'Content-Type': 'application/json',
+			}
+		})
+		.then(response => {
+			// console.log("I got a response", response);
+			response.json().then(data => {
+				handleResult(data);
+				// console.log(data);
+			});
+		})
+		.then(data => {
+			// console.log("I got a data", data);
+			// handleResult(data);
+			// console.log(data);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+
+		// console.log(recognizer.start_time);
+		recognizer.start_time += 1;
+		// recognizer.onchunk(chunk);
 	}
 
-	function floatTo16BitPcm(input) {
-		// convert float audio data to 16-bit PCM
-		let buffer = new ArrayBuffer(input.length * 2)
-		let output = new DataView(buffer);
-		for (let i = 0, offset = 0; i < input.length; i++, offset += 2) {
-			let s = Math.max(-1, Math.min(1, input[i]));
-			output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-		}
+	// function floatTo16BitPcm(input) {
+	// 	// convert float audio data to 16-bit PCM
+	// 	let buffer = new ArrayBuffer(input.length * 2)
+	// 	let output = new DataView(buffer);
+	// 	for (let i = 0, offset = 0; i < input.length; i++, offset += 2) {
+	// 		let s = Math.max(-1, Math.min(1, input[i]));
+	// 		output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+	// 	}
 
-		return buffer;
-	}
+	// 	return buffer;
+	// }
 
 	function handleVolume(volume) {
 		if(volume == 0) {
